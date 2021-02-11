@@ -51,4 +51,7 @@ RUN cd $DOCK && \
 # copy rules
 COPY 54-ft2232.rules /etc/udev/rules.d/54-ft2232.rules
 
+# force the use of bash
+RUN ln -sf /bin/bash /bin/sh
+
 WORKDIR /root
