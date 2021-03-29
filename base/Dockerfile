@@ -29,10 +29,21 @@ RUN cd $DOCK && \
     make -j$(nproc) && \
     make install
 
+# install cmake
+RUN apt-get install -y libssl-dev wget && \
+    cd $DOCK && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.16.5/cmake-3.16.5.tar.gz && \
+    tar -zxvf cmake-3.16.5.tar.gz && \
+    cd cmake-3.16.5 && \
+    ./bootstrap && make && \
+    make install
+
 # install nextpnr
 RUN cd $DOCK && \
     git clone https://github.com/YosysHQ/nextpnr nextpnr && \
     cd nextpnr && \
+    git submodule update --init --recursive && \
+    cmake --version && \
     cmake -DARCH=ice40 && \
     make -j$(nproc) && \
     make install
@@ -46,7 +57,10 @@ RUN cd $DOCK && \
 
 # remove downloaded stuff
 RUN cd $DOCK && \
-    rm -rf icestorm arachne-pnr nextpnr yosys
+    rm -rf ./*
+
+# install some extra stuff
+RUN apt-get install -y rsync
 
 # copy rules
 COPY 54-ft2232.rules /etc/udev/rules.d/54-ft2232.rules
